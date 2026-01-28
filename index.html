@@ -1,123 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>InstaAssistant – AI for Creators</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>InstaAssistant – AI for Instagram Creators</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', system-ui, Arial, sans-serif;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #0f172a, #020617);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 40px;
-    }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #020617, #000000);
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    .container {
-      max-width: 720px;
-    }
+/* Container */
+.hero {
+  max-width: 900px;
+  padding: 40px 20px;
+  text-align: center;
+}
 
-    .badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.1);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 20px;
-      margin-bottom: 20px;
-    }
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(56,189,248,0.12);
+  color: #38bdf8;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
 
-    h1 {
-      font-size: 44px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      line-height: 1.2;
-    }
+/* Headings */
+h1 {
+  font-size: clamp(32px, 6vw, 56px);
+  line-height: 1.1;
+  margin: 10px 0;
+}
 
-    h1 span {
-      color: #38bdf8;
-    }
+.highlight {
+  color: #38bdf8;
+}
 
-    p {
-      font-size: 18px;
-      color: #cbd5f5;
-      margin-bottom: 32px;
-      line-height: 1.6;
-    }
+.subtitle {
+  max-width: 640px;
+  margin: 18px auto 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #cbd5f5;
+}
 
-    .actions {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+/* Buttons */
+.buttons {
+  margin-top: 36px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
-    .btn {
-      padding: 14px 28px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      transition: all 0.2s ease;
-    }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-    .btn-primary {
-      background: #38bdf8;
-      color: #020617;
-    }
+  padding: 14px 30px;
+  min-width: 170px;
 
-    .btn-primary:hover {
-      background: #0ea5e9;
-    }
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
 
-    .btn-secondary {
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-    }
+  color: #020617;
+  background: #38bdf8;
 
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.08);
-    }
+  border-radius: 14px;
+  border: none;
 
-    footer {
-      margin-top: 50px;
-      font-size: 13px;
-      color: #94a3b8;
-    }
-  </style>
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #0ea5e9;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 14px 28px;
+  min-width: 200px;
+
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+
+  color: white;
+  background: transparent;
+
+  border-radius: 14px;
+  border: 1px solid #1e293b;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #020617;
+  transform: translateY(-1px);
+}
+
+/* Footer */
+.footer {
+  margin-top: 42px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .subtitle {
+    font-size: 16px;
+  }
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="badge">🚀 Early Access</div>
 
-    <h1>
-      AI Assistant for <span>Instagram Creators</span>
-    </h1>
+<section class="hero">
 
-    <p>
-      InstaAssistant helps creators manage links, auto-reply to DMs,
-      and convert followers into leads — all from one smart bio page.
-    </p>
+  <div class="badge">🚀 Early Access</div>
 
-    <div class="actions">
-      <a href="/login.html" class="btn-primary">Get Started</a>
-      <a href="https://www.instagram.com/instasassistantai/" class="btn btn-secondary">Follow on Instagram</a>
-    </div>
+  <h1>
+    AI Assistant for <span class="highlight">Instagram Creators</span>
+  </h1>
 
-    <footer>
-      Built for nano & micro creators · © 2026 InstaAssistant
-    </footer>
+  <p class="subtitle">
+    InstaAssistant helps creators manage links, auto-reply to DMs,
+    and convert followers into leads — all from one smart bio page.
+  </p>
+
+  <div class="buttons">
+    <a href="/signup.html" class="btn-primary">Get Started</a>
+    <a href="https://instagram.com/instaassistantai" target="_blank" class="btn-secondary">
+      Follow on Instagram
+    </a>
   </div>
+
+  <div class="footer">
+    Built for nano & micro creators · © 2026 InstaAssistant
+  </div>
+
+</section>
+
 </body>
 </html>
