@@ -1,12 +1,12 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
 
 <script>
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_wdK0N_KT3ZabHESPxjQ70A_R5Vup_84";
 
-const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// get username from URL
 const params = new URLSearchParams(window.location.search);
 const username = params.get("u");
 
@@ -17,7 +17,7 @@ async function loadCreator() {
     return;
   }
 
-  const { data: creator, error } = await db
+  const { data: creator, error } = await client
     .from("creators")
     .select("*")
     .eq("username", username)
@@ -25,6 +25,7 @@ async function loadCreator() {
 
   if (error || !creator) {
     document.body.innerHTML = "<h2 style='color:white'>Creator not found</h2>";
+    console.error(error);
     return;
   }
 
@@ -33,7 +34,7 @@ async function loadCreator() {
   document.getElementById("name").innerText = creator.name;
   document.getElementById("bio").innerText = creator.bio;
 
-  const { data: links } = await db
+  const { data: links } = await client
     .from("links")
     .select("*")
     .eq("creator_id", creator.id)
