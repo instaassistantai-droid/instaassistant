@@ -28,16 +28,8 @@ body {
   padding:28px;
 }
 
-h2 {
-  text-align:center;
-  margin-bottom:6px;
-}
-
-p {
-  text-align:center;
-  color:#94a3b8;
-  margin-bottom:22px;
-}
+h2 { text-align:center; margin-bottom:6px; }
+p { text-align:center; color:#94a3b8; margin-bottom:22px; }
 
 input {
   width:100%;
@@ -62,9 +54,7 @@ button {
   cursor:pointer;
 }
 
-button:hover {
-  background:#0ea5e9;
-}
+button:hover { background:#0ea5e9; }
 
 .note {
   text-align:center;
@@ -103,14 +93,14 @@ button:hover {
 
 <script>
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE";
+const SUPABASE_KEY = "PASTE_YOUR_ANON_PUBLIC_KEY_HERE";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function signup() {
 
   const name = document.getElementById("name").value.trim();
-  const username = document.getElementById("username").value.trim();
+  const username = document.getElementById("username").value.trim().toLowerCase();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -120,7 +110,7 @@ async function signup() {
   }
 
   // 1. Create auth user
-  const { user, error } = await client.auth.signUp({
+  const { data, error } = await client.auth.signUp({
     email,
     password
   });
@@ -130,19 +120,26 @@ async function signup() {
     return;
   }
 
-  // 2. Insert into creators table
+  const user = data.user;
+
+  if(!user){
+    show("Signup successful. Please refresh page.");
+    return;
+  }
+
+  // 2. Insert creator profile (RLS safe)
   const { error: dbError } = await client
     .from("creators")
     .insert([{
       id: user.id,
       name: name,
-      username: username.toLowerCase(),
+      username: username,
       bio: "Welcome to my InstaAssistant page 🚀",
       profile_image: "https://i.pravatar.cc/300"
     }]);
 
   if(dbError){
-    show("Account created, but username may already exist.");
+    show(dbError.message);
     return;
   }
 
