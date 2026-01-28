@@ -79,20 +79,20 @@ button:hover { background:#0ea5e9; }
 
   <input id="name" placeholder="Full name">
   <input id="username" placeholder="Username (unique)">
-  <input id="email" type="email" placeholder="Email address">
+  <input id="email" type="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
 
   <button onclick="signup()">Create account</button>
 
   <div class="note">
-    Already have an account?
-    <a href="/login.html" style="color:#38bdf8;text-decoration:none;">Sign in</a>
+    Already have account?
+    <a href="/login.html" style="color:#38bdf8;text-decoration:none;">Login</a>
   </div>
 </div>
 
 <script>
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
-const SUPABASE_KEY = "YOUR_ANON_PUBLIC_KEY";
+const SUPABASE_KEY = "sb_publishable_wdK0N_KT3ZabHESPxjQ70A_R5Vup_84";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -108,7 +108,6 @@ async function signup() {
     return;
   }
 
-  // 1. Create auth user
   const { user, error } = await client.auth.signUp({ email, password });
 
   if(error){
@@ -116,23 +115,21 @@ async function signup() {
     return;
   }
 
-  // 2. Insert into creators table
   const { error: dbError } = await client
     .from("creators")
     .insert([{
       id: user.id,
-      name: name,
-      username: username,
+      name,
+      username,
       bio: "Welcome to my InstaAssistant page 🚀",
       profile_image: "https://i.pravatar.cc/300"
     }]);
 
   if(dbError){
-    show("Account created, but username already exists.");
+    show("User created but username may already exist.");
     return;
   }
 
-  // 3. Redirect
   window.location.href = "/dashboard.html";
 }
 
