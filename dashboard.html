@@ -13,7 +13,6 @@ body {
   font-family: Inter, system-ui, Arial;
   background:#020617;
   color:white;
-  min-height:100vh;
 }
 
 .header {
@@ -24,32 +23,20 @@ body {
   align-items:center;
 }
 
-.box {
-  max-width:700px;
-  margin:auto;
-  padding:22px;
-}
-
 .card {
   border:1px solid #1e293b;
   border-radius:16px;
   padding:18px;
-  margin-bottom:16px;
+  margin:18px;
 }
 
 button {
-  padding:10px 14px;
-  border-radius:10px;
-  border:none;
   background:#38bdf8;
-  color:#020617;
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
   font-weight:600;
   cursor:pointer;
-}
-button:hover { background:#0ea5e9; }
-
-.link {
-  color:#38bdf8;
 }
 </style>
 </head>
@@ -61,61 +48,45 @@ button:hover { background:#0ea5e9; }
   <button onclick="logout()">Logout</button>
 </div>
 
-<div class="box">
+<div class="card">
+  <h2 id="name">Loading...</h2>
+  <p id="username"></p>
+  <p id="bio"></p>
+</div>
 
-  <div class="card">
-    <h2 id="name">Loading...</h2>
-    <p id="username"></p>
-    <p id="bio"></p>
-    <p>Your public page: <span class="link" id="page"></span></p>
-  </div>
-
-  <div class="card">
-    <h3>🔗 Connect platforms</h3>
-    <p>Instagram, YouTube, TikTok (coming next)</p>
-    <button>Connect Instagram</button>
-  </div>
-
-  <div class="card">
-    <h3>📊 Analytics (coming soon)</h3>
-    <p>Profile views, DM automation, leads</p>
-  </div>
-
+<div class="card">
+  <h3>Next steps</h3>
+  <ul>
+    <li>✅ Connect Instagram</li>
+    <li>✅ Add links</li>
+    <li>✅ Setup auto replies</li>
+  </ul>
 </div>
 
 <script>
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
-const SUPABASE_KEY = "YOUR_ANON_PUBLIC_KEY";
+const SUPABASE_KEY = "sb_publishable_wdK0N_KT3ZabHESPxjQ70A_R5Vup_84";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// protect dashboard
 const user = client.auth.user();
 if(!user){
   window.location.href = "/login.html";
 }
 
-// load creator
-loadCreator();
+load();
 
-async function loadCreator(){
+async function load(){
 
-  const { data, error } = await client
+  const { data } = await client
     .from("creators")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  if(error){
-    alert("Creator profile not found");
-    return;
-  }
-
   document.getElementById("name").innerText = data.name;
   document.getElementById("username").innerText = "@" + data.username;
   document.getElementById("bio").innerText = data.bio;
-  document.getElementById("page").innerText =
-    "instaassistant.vercel.app/creator.html?u=" + data.username;
 }
 
 async function logout(){
