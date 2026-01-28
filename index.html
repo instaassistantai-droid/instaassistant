@@ -1,13 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>InstaAssistant</title>
   <meta charset="UTF-8" />
+  <title>InstaAssistant – AI for Creators</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 720px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 44px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    h1 span {
+      color: #38bdf8;
+    }
+
+    p {
+      font-size: 18px;
+      color: #cbd5f5;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #38bdf8;
+      color: #020617;
+    }
+
+    .btn-primary:hover {
+      background: #0ea5e9;
+    }
+
+    .btn-secondary {
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+  </style>
 </head>
-<body style="font-family:Arial; text-align:center; padding:60px;">
-  <h1>🚀 InstaAssistant is Live</h1>
-  <p>Your system is running successfully.</p>
-  <p>Try: <b>/instaassistantai</b></p>
+
+<body>
+  <div class="container">
+    <div class="badge">🚀 Early Access</div>
+
+    <h1>
+      AI Assistant for <span>Instagram Creators</span>
+    </h1>
+
+    <p>
+      InstaAssistant helps creators manage links, auto-reply to DMs,
+      and convert followers into leads — all from one smart bio page.
+    </p>
+
+    <div class="actions">
+      <a href="/creator.html" class="btn btn-primary">Get Started</a>
+      <a href="https://instagram.com/instaassistantai" class="btn btn-secondary">Follow on Instagram</a>
+    </div>
+
+    <footer>
+      Built for nano & micro creators · © 2026 InstaAssistant
+    </footer>
+  </div>
 </body>
 </html>
