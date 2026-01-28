@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>InstaAssistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin:0;
+  font-family: Inter, system-ui, Arial;
+  background:#020617;
+  color:white;
+  display:flex;
+  justify-content:center;
+}
+.container {
+  width:100%;
+  max-width:420px;
+  padding:30px 20px;
+  text-align:center;
+}
+img {
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #38bdf8;
+}
+h1 { margin-top:14px; font-size:26px; }
+p { color:#cbd5f5; margin:10px 0 24px; }
+
+.links a {
+  display:block;
+  padding:14px;
+  margin-bottom:14px;
+  border-radius:12px;
+  background:#0f172a;
+  color:white;
+  text-decoration:none;
+  font-weight:600;
+  border:1px solid #1e293b;
+  transition:.2s;
+}
+.links a:hover {
+  background:#020617;
+  transform:scale(1.02);
+}
+
+footer {
+  margin-top:40px;
+  font-size:12px;
+  color:#64748b;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <img id="avatar" src="https://i.pravatar.cc/300">
+  <h1 id="name">Loading...</h1>
+  <p id="bio"></p>
+  <div class="links" id="links"></div>
+  <footer>Powered by InstaAssistant</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* 🔴 PASTE YOUR DETAILS HERE */
+const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wdK0N_KT3ZabHESPxjQ70A_R5Vup_84";
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// get username from URL
+const params = new URLSearchParams(window.location.search);
+const username = params.get("u");
+
+async function loadCreator() {
+
+  if (!username) {
+    document.body.innerHTML = "<h2 style='color:white'>No username provided</h2>";
+    return;
+  }
+
+  // fetch creator
+  const { data: creator } = await supabase
+    .from("creators")
+    .select("*")
+    .eq("username", username)
+    .single();
+
+  if (!creator) {
+    document.body.innerHTML = "<h2 style='color:white'>Creator not found</h2>";
+    return;
+  }
+
+  document.title = creator.name;
+  document.getElementById("avatar").src = creator.profile_image;
+  document.getElementById("name").innerText = creator.name;
+  document.getElementById("bio").innerText = creator.bio;
+
+  // fetch links
+  const { data: links } = await supabase
+    .from("links")
+    .select("*")
+    .eq("creator_id", creator.id)
+    .eq("is_active", true)
+    .order("order_no");
+
+  const box = document.getElementById("links");
+  box.innerHTML = "";
+
+  links.forEach(link => {
+    const a = document.createElement("a");
+    a.href = link.url;
+    a.target = "_blank";
+    a.innerText = link.title || "Visit";
+    box.appendChild(a);
+  });
+}
+
+loadCreator();
+</script>
+</body>
+</html>
