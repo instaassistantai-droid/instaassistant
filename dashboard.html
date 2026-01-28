@@ -13,107 +13,115 @@ body {
   font-family: Inter, system-ui, Arial;
   background:#020617;
   color:white;
-  display:flex;
-  justify-content:center;
+  min-height:100vh;
 }
 
-.container {
-  width:100%;
-  max-width:420px;
-  padding:30px 20px;
+.header {
+  padding:18px;
+  border-bottom:1px solid #1e293b;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.box {
+  max-width:700px;
+  margin:auto;
+  padding:22px;
 }
 
 .card {
-  background:#020617;
   border:1px solid #1e293b;
-  border-radius:18px;
-  padding:22px;
-  margin-bottom:20px;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
 }
 
-h2 { margin:0 0 6px; }
-p { color:#94a3b8; margin:0 0 16px; }
-
-.btn {
-  display:block;
-  width:100%;
-  padding:14px;
-  border-radius:12px;
+button {
+  padding:10px 14px;
+  border-radius:10px;
   border:none;
   background:#38bdf8;
   color:#020617;
   font-weight:600;
-  font-size:15px;
   cursor:pointer;
-  text-align:center;
-  text-decoration:none;
 }
+button:hover { background:#0ea5e9; }
 
-.btn.secondary {
-  background:#020617;
+.link {
   color:#38bdf8;
-  border:1px solid #38bdf8;
-  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="header">
+  <div>🚀 InstaAssistant</div>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<div class="box">
 
   <div class="card">
     <h2 id="name">Loading...</h2>
     <p id="username"></p>
+    <p id="bio"></p>
+    <p>Your public page: <span class="link" id="page"></span></p>
   </div>
 
   <div class="card">
-    <p>Your public creator page</p>
-    <a id="publicLink" class="btn" target="_blank">Open creator page</a>
+    <h3>🔗 Connect platforms</h3>
+    <p>Instagram, YouTube, TikTok (coming next)</p>
+    <button>Connect Instagram</button>
   </div>
 
   <div class="card">
-    <p>Next step</p>
-    <a class="btn secondary">Connect Instagram (Coming next)</a>
+    <h3>📊 Analytics (coming soon)</h3>
+    <p>Profile views, DM automation, leads</p>
   </div>
 
 </div>
 
 <script>
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
-const SUPABASE_KEY = "PASTE_YOUR_ANON_PUBLIC_KEY_HERE";
+const SUPABASE_KEY = "YOUR_ANON_PUBLIC_KEY";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function loadDashboard(){
+// protect dashboard
+const user = client.auth.user();
+if(!user){
+  window.location.href = "/login.html";
+}
 
-  const user = client.auth.user();
+// load creator
+loadCreator();
 
-  if(!user){
-    window.location.href = "/signup.html";
-    return;
-  }
+async function loadCreator(){
 
-  const { data: creator, error } = await client
+  const { data, error } = await client
     .from("creators")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  if(error || !creator){
+  if(error){
     alert("Creator profile not found");
     return;
   }
 
-  document.getElementById("name").innerText = creator.name;
-  document.getElementById("username").innerText = "@" + creator.username;
-
-  const link = `/creator.html?u=${creator.username}`;
-  document.getElementById("publicLink").href = link;
-  document.getElementById("publicLink").innerText = link;
+  document.getElementById("name").innerText = data.name;
+  document.getElementById("username").innerText = "@" + data.username;
+  document.getElementById("bio").innerText = data.bio;
+  document.getElementById("page").innerText =
+    "instaassistant.vercel.app/creator.html?u=" + data.username;
 }
 
-loadDashboard();
+async function logout(){
+  await client.auth.signOut();
+  window.location.href = "/login.html";
+}
 </script>
 
 </body>
