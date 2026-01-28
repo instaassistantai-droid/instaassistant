@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard – InstaAssistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family: Inter, system-ui, Arial;
+  background:#020617;
+  color:white;
+  display:flex;
+  justify-content:center;
+}
+
+.container {
+  width:100%;
+  max-width:420px;
+  padding:30px 20px;
+}
+
+.card {
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:20px;
+}
+
+h2 { margin:0 0 6px; }
+p { color:#94a3b8; margin:0 0 16px; }
+
+.btn {
+  display:block;
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  background:#38bdf8;
+  color:#020617;
+  font-weight:600;
+  font-size:15px;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+}
+
+.btn.secondary {
+  background:#020617;
+  color:#38bdf8;
+  border:1px solid #38bdf8;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h2 id="name">Loading...</h2>
+    <p id="username"></p>
+  </div>
+
+  <div class="card">
+    <p>Your public creator page</p>
+    <a id="publicLink" class="btn" target="_blank">Open creator page</a>
+  </div>
+
+  <div class="card">
+    <p>Next step</p>
+    <a class="btn secondary">Connect Instagram (Coming next)</a>
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
+const SUPABASE_KEY = "PASTE_YOUR_ANON_PUBLIC_KEY_HERE";
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadDashboard(){
+
+  const user = client.auth.user();
+
+  if(!user){
+    window.location.href = "/signup.html";
+    return;
+  }
+
+  const { data: creator, error } = await client
+    .from("creators")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if(error || !creator){
+    alert("Creator profile not found");
+    return;
+  }
+
+  document.getElementById("name").innerText = creator.name;
+  document.getElementById("username").innerText = "@" + creator.username;
+
+  const link = `/creator.html?u=${creator.username}`;
+  document.getElementById("publicLink").href = link;
+  document.getElementById("publicLink").innerText = link;
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>
