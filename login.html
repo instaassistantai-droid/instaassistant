@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login | InstaAssistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
+
+  <style>
+    body{
+      background:#020617;
+      color:white;
+      font-family:Inter;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+    .box{
+      width:100%;
+      max-width:360px;
+      padding:24px;
+      border:1px solid #1e293b;
+      border-radius:16px;
+      background:#020617;
+    }
+    input,button{
+      width:100%;
+      padding:12px;
+      margin-top:12px;
+      border-radius:10px;
+      border:1px solid #1e293b;
+      background:#020617;
+      color:white;
+    }
+    button{
+      background:#38bdf8;
+      color:black;
+      font-weight:600;
+      cursor:pointer;
+    }
+    p{color:#94a3b8;font-size:14px;}
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Get Started 🚀</h2>
+  <p>Create your creator page</p>
+
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="signup()">Sign up</button>
+  <p id="msg"></p>
+</div>
+
+<script>
+const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function signup() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password
+  });
+
+  if (error) {
+    document.getElementById("msg").innerText = error.message;
+  } else {
+    document.getElementById("msg").innerText =
+      "Check your email to confirm. After confirm, login again.";
+  }
+}
+</script>
+
+</body>
+</html>
