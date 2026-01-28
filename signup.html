@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Signup – InstaAssistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family: Inter, system-ui, Arial;
+  background:#020617;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.box {
+  width:100%;
+  max-width:420px;
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:18px;
+  padding:28px;
+}
+
+h2 {
+  text-align:center;
+  margin-bottom:6px;
+}
+
+p {
+  text-align:center;
+  color:#94a3b8;
+  margin-bottom:22px;
+}
+
+input {
+  width:100%;
+  padding:14px;
+  margin-bottom:14px;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  background:#020617;
+  color:white;
+  font-size:15px;
+}
+
+button {
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  background:#38bdf8;
+  color:#020617;
+  font-weight:600;
+  font-size:16px;
+  cursor:pointer;
+}
+
+button:hover {
+  background:#0ea5e9;
+}
+
+.note {
+  text-align:center;
+  font-size:13px;
+  color:#64748b;
+  margin-top:14px;
+}
+
+.error {
+  color:#f87171;
+  text-align:center;
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Create your creator page</h2>
+  <p>Launch your AI assistant in under 60 seconds</p>
+
+  <div id="msg" class="error"></div>
+
+  <input id="name" placeholder="Your full name">
+  <input id="username" placeholder="Username (unique)">
+  <input id="email" type="email" placeholder="Email address">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="signup()">Create account</button>
+
+  <div class="note">
+    After signup, you’ll get your personal dashboard.
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE";
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function signup() {
+
+  const name = document.getElementById("name").value.trim();
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if(!name || !username || !email || !password){
+    show("All fields are required");
+    return;
+  }
+
+  // 1. Create auth user
+  const { user, error } = await client.auth.signUp({
+    email,
+    password
+  });
+
+  if(error){
+    show(error.message);
+    return;
+  }
+
+  // 2. Insert into creators table
+  const { error: dbError } = await client
+    .from("creators")
+    .insert([{
+      id: user.id,
+      name: name,
+      username: username.toLowerCase(),
+      bio: "Welcome to my InstaAssistant page 🚀",
+      profile_image: "https://i.pravatar.cc/300"
+    }]);
+
+  if(dbError){
+    show("Account created, but username may already exist.");
+    return;
+  }
+
+  // 3. Redirect to dashboard
+  window.location.href = "/dashboard.html";
+}
+
+function show(msg){
+  document.getElementById("msg").innerText = msg;
+}
+</script>
+
+</body>
+</html>
