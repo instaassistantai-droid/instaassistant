@@ -8,63 +8,161 @@
 <script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
 
 <style>
-body{margin:0;font-family:Inter,system-ui;background:#020617;color:white}
-header{padding:14px 18px;border-bottom:1px solid #0f172a;display:flex;justify-content:space-between;align-items:center}
-.container{max-width:900px;margin:auto;padding:18px}
-.card{background:#020617;border:1px solid #0f172a;border-radius:18px;padding:18px;margin-bottom:16px}
-.profile{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-.avatar{width:90px;height:90px;border-radius:50%;border:3px solid #38bdf8;object-fit:cover}
-input,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #0f172a;background:#020617;color:white;margin-top:8px}
-button{background:#38bdf8;border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;margin-top:8px}
-button:hover{background:#0ea5e9}
-.logout{background:#ef4444;color:white}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
-.platform{border:1px solid #0f172a;border-radius:14px;padding:14px;text-align:center}
-small{color:#94a3b8}
+body {
+  margin:0;
+  font-family: Inter, system-ui, Arial;
+  background:#020617;
+  color:white;
+}
+
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 22px;
+  border-bottom:1px solid #0f172a;
+}
+
+.logo {
+  font-weight:700;
+  font-size:18px;
+}
+
+.logout {
+  background:#38bdf8;
+  border:none;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.card {
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:22px;
+}
+
+.profile {
+  display:flex;
+  gap:20px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+
+.avatar {
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #38bdf8;
+}
+
+input, textarea {
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #1e293b;
+  background:#020617;
+  color:white;
+  margin-bottom:10px;
+}
+
+textarea { resize:none; }
+
+.btn {
+  background:#38bdf8;
+  border:none;
+  border-radius:10px;
+  padding:12px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:6px;
+}
+
+.platforms {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px;
+}
+
+.platform-card {
+  border:1px solid #1e293b;
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+}
+
+.small {
+  color:#94a3b8;
+  font-size:13px;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<div>🚀 InstaAssistant</div>
-<button class="logout" onclick="logout()">Logout</button>
+  <div class="logo">🚀 InstaAssistant</div>
+  <button class="logout" onclick="logout()">Logout</button>
 </header>
 
 <div class="container">
 
-<div class="card profile">
-<img id="avatar" class="avatar" src="https://i.pravatar.cc/200">
-<div style="flex:1">
-<h2 id="name">Loading...</h2>
-<p id="username" style="color:#94a3b8"></p>
+  <!-- PROFILE -->
+  <div class="card profile">
+    <div>
+      <img id="avatar" class="avatar" src="https://i.pravatar.cc/300">
+      <input type="file" id="photoInput" onchange="updatePhoto()">
+    </div>
 
-<input type="file" accept="image/*" id="photoInput">
-<textarea id="bio" placeholder="Your bio"></textarea>
-<button id="saveBtn">Save profile</button>
+    <div style="flex:1">
+      <h2 id="name">Loading...</h2>
+      <p class="small" id="username">@</p>
 
-<p><small>Public page:</small> <span id="publicUrl"></span></p>
-</div>
-</div>
+      <textarea id="bio" rows="3" placeholder="Your bio"></textarea>
+      <button class="btn" onclick="saveProfile()">Save profile</button>
 
-<div class="card">
-<h3>🔗 Connect platforms</h3>
-<div class="grid">
-<div class="platform"><b>Instagram</b><br><button onclick="connectPlatform('Instagram')">Connect</button></div>
-<div class="platform"><b>YouTube</b><br><button onclick="connectPlatform('YouTube')">Connect</button></div>
-<div class="platform"><b>TikTok</b><br><button onclick="connectPlatform('TikTok')">Connect</button></div>
-<div class="platform"><b>Spotify</b><br><button onclick="connectPlatform('Spotify')">Connect</button></div>
-</div>
-</div>
+      <p class="small">Public page: <span id="publicLink"></span></p>
+    </div>
+  </div>
 
-<div class="card">
-<h3>📈 Trends & insights (demo)</h3>
-<ul style="color:#94a3b8">
-<li>Reels engagement ↑ 32%</li>
-<li>DM response ↑ 18%</li>
-<li>Profile visits ↑ 21%</li>
-</ul>
-</div>
+  <!-- CONNECT PLATFORMS -->
+  <div class="card">
+    <h3>🔗 Connect your platforms</h3>
+
+    <div style="margin:14px 0">
+      <input id="igUsername" placeholder="Instagram username">
+      <input id="igFollowers" placeholder="Followers count">
+      <input id="igNiche" placeholder="Niche (fitness, finance…)">
+      <input id="igGoals" placeholder="Goals (leads, sales…)">
+      <button class="btn" onclick="connectInstagram()">Connect Instagram</button>
+      <p id="igStatus" class="small"></p>
+    </div>
+
+    <div class="platforms">
+      <div class="platform-card">📸 Instagram</div>
+      <div class="platform-card">▶ YouTube (next)</div>
+      <div class="platform-card">🎵 TikTok (next)</div>
+      <div class="platform-card">🎧 Spotify (next)</div>
+    </div>
+  </div>
+
+  <!-- DEMO INSIGHTS -->
+  <div class="card">
+    <h3>📊 Trends & insights (demo)</h3>
+    <p>🔥 Reels engagement: +32%</p>
+    <p>👥 Profile visits: +18%</p>
+    <p>💬 DM replies boosted with AI</p>
+  </div>
 
 </div>
 
@@ -72,56 +170,82 @@ small{color:#94a3b8}
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE";
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let currentUser = null;
+let creator = null;
 
-document.getElementById("photoInput").addEventListener("change", updatePhoto);
-document.getElementById("saveBtn").addEventListener("click", saveProfile);
+async function init() {
+  const { data } = await supabase.auth.getUser();
+  if(!data.user){
+    location.href="/login.html";
+    return;
+  }
 
-init();
+  currentUser = data.user;
 
-async function init(){
-const user = client.auth.user();
-if(!user){ location.href="/login.html"; return; }
-currentUser = user;
+  const res = await supabase
+    .from("creators")
+    .select("*")
+    .eq("id", currentUser.id)
+    .single();
 
-const {data} = await client.from("creators").select("*").eq("id",user.id).single();
+  creator = res.data;
 
-document.getElementById("name").innerText = data.name;
-document.getElementById("username").innerText = "@"+data.username;
-document.getElementById("bio").value = data.bio || "";
-document.getElementById("avatar").src = data.profile_image;
-document.getElementById("publicUrl").innerText = location.origin+"/creator.html?u="+data.username;
-}
-
-async function updatePhoto(e){
-const file = e.target.files[0];
-if(!file) return;
-
-const fileName = currentUser.id+"-"+Date.now();
-await client.storage.from("avatars").upload(fileName,file,{upsert:true});
-const { publicURL } = client.storage.from("avatars").getPublicUrl(fileName);
-
-document.getElementById("avatar").src = publicURL;
-await client.from("creators").update({profile_image:publicURL}).eq("id",currentUser.id);
+  document.getElementById("name").innerText = creator.name;
+  document.getElementById("username").innerText = "@"+creator.username;
+  document.getElementById("bio").value = creator.bio || "";
+  document.getElementById("avatar").src = creator.profile_image;
+  document.getElementById("publicLink").innerText =
+    location.origin+"/creator.html?u="+creator.username;
 }
 
 async function saveProfile(){
-const bio = document.getElementById("bio").value;
-await client.from("creators").update({bio}).eq("id",currentUser.id);
-alert("Profile saved ✅");
+  await supabase.from("creators")
+    .update({ bio: document.getElementById("bio").value })
+    .eq("id", currentUser.id);
+
+  alert("Profile updated");
 }
 
-function connectPlatform(name){
-alert(name+" integration coming next 🚀");
+async function updatePhoto(){
+  const file = document.getElementById("photoInput").files[0];
+  const filePath = currentUser.id+"-"+Date.now();
+
+  await supabase.storage.from("avatars").upload(filePath, file, { upsert:true });
+
+  const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+  await supabase.from("creators")
+    .update({ profile_image: data.publicUrl })
+    .eq("id", currentUser.id);
+
+  document.getElementById("avatar").src = data.publicUrl;
+}
+
+async function connectInstagram(){
+  const username = igUsername.value.trim();
+  if(!username) return alert("Enter Instagram username");
+
+  await supabase.from("social_accounts").insert([{
+    user_id: currentUser.id,
+    platform: "instagram",
+    username: username,
+    followers: igFollowers.value,
+    niche: igNiche.value,
+    goals: igGoals.value
+  }]);
+
+  igStatus.innerText = "✅ Instagram connected successfully";
 }
 
 async function logout(){
-await client.auth.signOut();
-location.href="/login.html";
+  await supabase.auth.signOut();
+  location.href="/login.html";
 }
+
+init();
 </script>
 
 </body>
 </html>
-
