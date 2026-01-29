@@ -5,7 +5,7 @@
 <title>Dashboard – InstaAssistant</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
 body {
@@ -15,22 +15,20 @@ body {
   color:white;
 }
 
-.header {
-  padding:18px;
-  border-bottom:1px solid #1e293b;
+header {
   display:flex;
   justify-content:space-between;
   align-items:center;
+  padding:18px 24px;
+  border-bottom:1px solid #1e293b;
 }
 
-.card {
-  border:1px solid #1e293b;
-  border-radius:16px;
-  padding:18px;
-  margin:18px;
+.logo {
+  font-weight:700;
+  font-size:18px;
 }
 
-button {
+.logout {
   background:#38bdf8;
   border:none;
   padding:10px 16px;
@@ -38,61 +36,214 @@ button {
   font-weight:600;
   cursor:pointer;
 }
+
+.container {
+  max-width:1000px;
+  margin:auto;
+  padding:28px 18px;
+}
+
+.card {
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:22px;
+}
+
+.profile {
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+.profile img {
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:3px solid #38bdf8;
+  object-fit:cover;
+}
+
+h2 { margin:0; }
+.username { color:#94a3b8; margin-top:4px; }
+.bio { margin-top:10px; color:#cbd5f5; }
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;
+  margin-top:14px;
+}
+
+.platform {
+  border:1px solid #1e293b;
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+}
+
+.platform button {
+  margin-top:10px;
+  padding:10px;
+  width:100%;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  background:#0f172a;
+  color:white;
+  font-weight:600;
+}
+
+.platform.connected {
+  border-color:#22c55e;
+}
+
+.trend {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+  color:#cbd5f5;
+}
+
+.linkbox {
+  background:#0f172a;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+  word-break:break-all;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div>🚀 InstaAssistant</div>
-  <button onclick="logout()">Logout</button>
-</div>
+<header>
+  <div class="logo">🚀 InstaAssistant</div>
+  <button class="logout" onclick="logout()">Logout</button>
+</header>
 
-<div class="card">
-  <h2 id="name">Loading...</h2>
-  <p id="username"></p>
-  <p id="bio"></p>
-</div>
+<div class="container">
 
-<div class="card">
-  <h3>Next steps</h3>
-  <ul>
-    <li>✅ Connect Instagram</li>
-    <li>✅ Add links</li>
-    <li>✅ Setup auto replies</li>
-  </ul>
+  <!-- PROFILE -->
+  <div class="card profile">
+    <img id="avatar" src="https://i.pravatar.cc/300">
+    <div>
+      <h2 id="name">Loading...</h2>
+      <div class="username" id="username"></div>
+      <div class="bio" id="bio"></div>
+
+      <div class="linkbox">
+        Public page: <br>
+        <a id="publicLink" href="#" target="_blank" style="color:#38bdf8"></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECT PLATFORMS -->
+  <div class="card">
+    <h3>🔗 Connect your platforms</h3>
+    <div class="grid">
+
+      <div class="platform" id="instaBox">
+        📸 Instagram
+        <button onclick="connect('instagram')">Connect Instagram</button>
+      </div>
+
+      <div class="platform" id="ytBox">
+        ▶️ YouTube
+        <button onclick="connect('youtube')">Connect YouTube</button>
+      </div>
+
+      <div class="platform" id="ttBox">
+        🎵 TikTok
+        <button onclick="connect('tiktok')">Connect TikTok</button>
+      </div>
+
+      <div class="platform" id="spBox">
+        🎧 Spotify
+        <button onclick="connect('spotify')">Connect Spotify</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TRENDS -->
+  <div class="card">
+    <h3>📈 Trends & insights (demo)</h3>
+
+    <div class="trend">
+      <span>🔥 Reels engagement</span>
+      <span>+32%</span>
+    </div>
+
+    <div class="trend">
+      <span>👀 Profile visits</span>
+      <span>1,248 this week</span>
+    </div>
+
+    <div class="trend">
+      <span>💬 DM conversations</span>
+      <span>87</span>
+    </div>
+
+    <div class="trend">
+      <span>🚀 Best content time</span>
+      <span>7:30 PM</span>
+    </div>
+
+    <small style="color:#64748b">Real analytics baad me Instagram / YouTube APIs se connect karenge.</small>
+  </div>
+
 </div>
 
 <script>
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_wdK0N_KT3ZabHESPxjQ70A_R5Vup_84";
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const user = client.auth.user();
-if(!user){
-  window.location.href = "/login.html";
-}
+async function loadDashboard(){
 
-load();
+  const { data: { user } } = await supabase.auth.getUser();
 
-async function load(){
+  if(!user){
+    window.location.href = "/login.html";
+    return;
+  }
 
-  const { data } = await client
+  const { data: creator } = await supabase
     .from("creators")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  document.getElementById("name").innerText = data.name;
-  document.getElementById("username").innerText = "@" + data.username;
-  document.getElementById("bio").innerText = data.bio;
+  if(!creator){
+    alert("Creator profile not found");
+    return;
+  }
+
+  document.getElementById("name").innerText = creator.name;
+  document.getElementById("username").innerText = "@"+creator.username;
+  document.getElementById("bio").innerText = creator.bio || "";
+  document.getElementById("avatar").src = creator.profile_image || "https://i.pravatar.cc/300";
+
+  const link = "https://instaassistant.vercel.app/creator.html?u=" + creator.username;
+  document.getElementById("publicLink").innerText = link;
+  document.getElementById("publicLink").href = link;
+}
+
+function connect(platform){
+  alert(platform.toUpperCase()+" connection flow yahan aayega (OAuth / API)");
+  document.getElementById(platform.slice(0,2)+"Box")?.classList.add("connected");
 }
 
 async function logout(){
-  await client.auth.signOut();
+  await supabase.auth.signOut();
   window.location.href = "/login.html";
 }
+
+loadDashboard();
 </script>
 
 </body>
