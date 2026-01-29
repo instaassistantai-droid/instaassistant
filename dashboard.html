@@ -23,10 +23,7 @@ header {
   border-bottom:1px solid #1e293b;
 }
 
-.logo {
-  font-weight:700;
-  font-size:18px;
-}
+.logo { font-weight:700; font-size:18px; }
 
 .logout {
   background:#38bdf8;
@@ -38,7 +35,7 @@ header {
 }
 
 .container {
-  max-width:1000px;
+  max-width:1100px;
   margin:auto;
   padding:28px 18px;
 }
@@ -53,21 +50,40 @@ header {
 
 .profile {
   display:flex;
-  gap:18px;
+  gap:20px;
   align-items:center;
+  flex-wrap:wrap;
 }
 
 .profile img {
-  width:90px;
-  height:90px;
+  width:110px;
+  height:110px;
   border-radius:50%;
   border:3px solid #38bdf8;
   object-fit:cover;
 }
 
-h2 { margin:0; }
-.username { color:#94a3b8; margin-top:4px; }
-.bio { margin-top:10px; color:#cbd5f5; }
+input, textarea {
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border-radius:10px;
+  border:1px solid #1e293b;
+  background:#020617;
+  color:white;
+}
+
+button {
+  padding:12px 14px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  background:#0f172a;
+  color:white;
+  font-weight:600;
+}
+
+.primary { background:#38bdf8; color:#020617; }
 
 .grid {
   display:grid;
@@ -83,28 +99,7 @@ h2 { margin:0; }
   text-align:center;
 }
 
-.platform button {
-  margin-top:10px;
-  padding:10px;
-  width:100%;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  background:#0f172a;
-  color:white;
-  font-weight:600;
-}
-
-.platform.connected {
-  border-color:#22c55e;
-}
-
-.trend {
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:10px;
-  color:#cbd5f5;
-}
+.platform button { width:100%; margin-top:10px; }
 
 .linkbox {
   background:#0f172a;
@@ -127,11 +122,17 @@ h2 { margin:0; }
 
   <!-- PROFILE -->
   <div class="card profile">
-    <img id="avatar" src="https://i.pravatar.cc/300">
     <div>
+      <img id="avatar" src="https://i.pravatar.cc/300">
+      <input type="file" id="photoInput" accept="image/*" onchange="updatePhoto()">
+    </div>
+
+    <div style="flex:1; min-width:240px">
       <h2 id="name">Loading...</h2>
-      <div class="username" id="username"></div>
-      <div class="bio" id="bio"></div>
+      <div id="username" style="color:#94a3b8"></div>
+
+      <textarea id="bio" rows="3" placeholder="Write your bio..."></textarea>
+      <button class="primary" onclick="saveProfile()">Save profile</button>
 
       <div class="linkbox">
         Public page: <br>
@@ -140,29 +141,29 @@ h2 { margin:0; }
     </div>
   </div>
 
-  <!-- CONNECT PLATFORMS -->
+  <!-- CONNECT -->
   <div class="card">
     <h3>🔗 Connect your platforms</h3>
     <div class="grid">
 
-      <div class="platform" id="instaBox">
+      <div class="platform">
         📸 Instagram
-        <button onclick="connect('instagram')">Connect Instagram</button>
+        <button onclick="connectPlatform('Instagram')">Connect Instagram</button>
       </div>
 
-      <div class="platform" id="ytBox">
+      <div class="platform">
         ▶️ YouTube
-        <button onclick="connect('youtube')">Connect YouTube</button>
+        <button onclick="connectPlatform('YouTube')">Connect YouTube</button>
       </div>
 
-      <div class="platform" id="ttBox">
+      <div class="platform">
         🎵 TikTok
-        <button onclick="connect('tiktok')">Connect TikTok</button>
+        <button onclick="connectPlatform('TikTok')">Connect TikTok</button>
       </div>
 
-      <div class="platform" id="spBox">
+      <div class="platform">
         🎧 Spotify
-        <button onclick="connect('spotify')">Connect Spotify</button>
+        <button onclick="connectPlatform('Spotify')">Connect Spotify</button>
       </div>
 
     </div>
@@ -171,28 +172,7 @@ h2 { margin:0; }
   <!-- TRENDS -->
   <div class="card">
     <h3>📈 Trends & insights (demo)</h3>
-
-    <div class="trend">
-      <span>🔥 Reels engagement</span>
-      <span>+32%</span>
-    </div>
-
-    <div class="trend">
-      <span>👀 Profile visits</span>
-      <span>1,248 this week</span>
-    </div>
-
-    <div class="trend">
-      <span>💬 DM conversations</span>
-      <span>87</span>
-    </div>
-
-    <div class="trend">
-      <span>🚀 Best content time</span>
-      <span>7:30 PM</span>
-    </div>
-
-    <small style="color:#64748b">Real analytics baad me Instagram / YouTube APIs se connect karenge.</small>
+    <p style="color:#94a3b8">🔥 Reels engagement +32%<br>👀 Profile visits 1,248<br>💬 DMs 87<br>🚀 Best time: 7:30 PM</p>
   </div>
 
 </div>
@@ -202,49 +182,62 @@ const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_wdK0N_KT3ZabHESPxjQ70A_R5Vup_84";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null;
+let creatorData = null;
 
 async function loadDashboard(){
-
   const { data: { user } } = await supabase.auth.getUser();
+  if(!user){ window.location.href="/login.html"; return; }
+  currentUser = user;
 
-  if(!user){
-    window.location.href = "/login.html";
-    return;
-  }
+  const { data } = await supabase.from("creators").select("*").eq("id", user.id).single();
+  creatorData = data;
 
-  const { data: creator } = await supabase
-    .from("creators")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  document.getElementById("name").innerText = data.name;
+  document.getElementById("username").innerText = "@"+data.username;
+  document.getElementById("bio").value = data.bio || "";
+  document.getElementById("avatar").src = data.profile_image || "https://i.pravatar.cc/300";
 
-  if(!creator){
-    alert("Creator profile not found");
-    return;
-  }
-
-  document.getElementById("name").innerText = creator.name;
-  document.getElementById("username").innerText = "@"+creator.username;
-  document.getElementById("bio").innerText = creator.bio || "";
-  document.getElementById("avatar").src = creator.profile_image || "https://i.pravatar.cc/300";
-
-  const link = "https://instaassistant.vercel.app/creator.html?u=" + creator.username;
+  const link = "https://instaassistant.vercel.app/creator.html?u="+data.username;
   document.getElementById("publicLink").innerText = link;
   document.getElementById("publicLink").href = link;
 }
 
-function connect(platform){
-  alert(platform.toUpperCase()+" connection flow yahan aayega (OAuth / API)");
-  document.getElementById(platform.slice(0,2)+"Box")?.classList.add("connected");
+async function saveProfile(){
+  const bio = document.getElementById("bio").value;
+
+  await supabase.from("creators").update({ bio }).eq("id", currentUser.id);
+  alert("Profile updated ✅");
+}
+
+async function updatePhoto(){
+  const file = document.getElementById("photoInput").files[0];
+  if(!file) return;
+
+  const fileName = currentUser.id+"-"+Date.now();
+
+  const { data } = await supabase.storage.from("avatars").upload(fileName, file, { upsert:true });
+
+  const { data: url } = supabase.storage.from("avatars").getPublicUrl(fileName);
+
+  await supabase.from("creators").update({
+    profile_image: url.publicUrl
+  }).eq("id", currentUser.id);
+
+  document.getElementById("avatar").src = url.publicUrl;
+  alert("Photo updated 🔥");
+}
+
+function connectPlatform(name){
+  alert(name+" OAuth connect yahan aayega.\nNext step me real Instagram/YouTube connect karenge.");
 }
 
 async function logout(){
   await supabase.auth.signOut();
-  window.location.href = "/login.html";
+  window.location.href="/login.html";
 }
 
 loadDashboard();
 </script>
-
 </body>
 </html>
