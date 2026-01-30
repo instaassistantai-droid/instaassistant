@@ -1,251 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Dashboard – InstaAssistant</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
 
-<style>
-body {
-  margin:0;
-  font-family: Inter, system-ui, Arial;
-  background:#020617;
-  color:white;
-}
-
-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px 22px;
-  border-bottom:1px solid #0f172a;
-}
-
-.logo {
-  font-weight:700;
-  font-size:18px;
-}
-
-.logout {
-  background:#38bdf8;
-  border:none;
-  border-radius:10px;
-  padding:10px 14px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.container {
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
-
-.card {
-  background:#020617;
-  border:1px solid #1e293b;
-  border-radius:18px;
-  padding:22px;
-  margin-bottom:22px;
-}
-
-.profile {
-  display:flex;
-  gap:20px;
-  align-items:flex-start;
-  flex-wrap:wrap;
-}
-
-.avatar {
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid #38bdf8;
-}
-
-input, textarea {
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #1e293b;
-  background:#020617;
-  color:white;
-  margin-bottom:10px;
-}
-
-textarea { resize:none; }
-
-.btn {
-  background:#38bdf8;
-  border:none;
-  border-radius:10px;
-  padding:12px;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:6px;
-}
-
-.platforms {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:14px;
-}
-
-.platform-card {
-  border:1px solid #1e293b;
-  border-radius:14px;
-  padding:16px;
-  text-align:center;
-}
-
-.small {
-  color:#94a3b8;
-  font-size:13px;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <div class="logo">🚀 InstaAssistant</div>
-  <button class="logout" onclick="logout()">Logout</button>
-</header>
-
-<div class="container">
-
-  <!-- PROFILE -->
-  <div class="card profile">
-    <div>
-      <img id="avatar" class="avatar" src="https://i.pravatar.cc/300">
-      <input type="file" id="photoInput" onchange="updatePhoto()">
-    </div>
-
-    <div style="flex:1">
-      <h2 id="name">Loading...</h2>
-      <p class="small" id="username">@</p>
-
-      <textarea id="bio" rows="3" placeholder="Your bio"></textarea>
-      <button class="btn" onclick="saveProfile()">Save profile</button>
-
-      <p class="small">Public page: <span id="publicLink"></span></p>
-    </div>
-  </div>
-
-  <!-- CONNECT PLATFORMS -->
-  <div class="card">
-    <h3>🔗 Connect your platforms</h3>
-
-    <div style="margin:14px 0">
-      <input id="igUsername" placeholder="Instagram username">
-      <input id="igFollowers" placeholder="Followers count">
-      <input id="igNiche" placeholder="Niche (fitness, finance…)">
-      <input id="igGoals" placeholder="Goals (leads, sales…)">
-      <button class="btn" onclick="connectInstagram()">Connect Instagram</button>
-      <p id="igStatus" class="small"></p>
-    </div>
-
-    <div class="platforms">
-      <div class="platform-card">📸 Instagram</div>
-      <div class="platform-card">▶ YouTube (next)</div>
-      <div class="platform-card">🎵 TikTok (next)</div>
-      <div class="platform-card">🎧 Spotify (next)</div>
-    </div>
-  </div>
-
-  <!-- DEMO INSIGHTS -->
-  <div class="card">
-    <h3>📊 Trends & insights (demo)</h3>
-    <p>🔥 Reels engagement: +32%</p>
-    <p>👥 Profile visits: +18%</p>
-    <p>💬 DM replies boosted with AI</p>
-  </div>
-
-</div>
-
 <script>
+/* ===== 1️⃣ SUPABASE INIT (TOP MOST) ===== */
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-let currentUser = null;
-let creator = null;
-
-async function init() {
-  const { data } = await supabase.auth.getUser();
-  if(!data.user){
-    location.href="/login.html";
-    return;
-  }
-
-  currentUser = data.user;
-
-  const res = await supabase
-    .from("creators")
-    .select("*")
-    .eq("id", currentUser.id)
-    .single();
-
-  creator = res.data;
-
-  document.getElementById("name").innerText = creator.name;
-  document.getElementById("username").innerText = "@"+creator.username;
-  document.getElementById("bio").value = creator.bio || "";
-  document.getElementById("avatar").src = creator.profile_image;
-  document.getElementById("publicLink").innerText =
-    location.origin+"/creator.html?u="+creator.username;
+/* ===== 2️⃣ AUTH CHECK ===== */
+const user = supabase.auth.user();
+if (!user) {
+  window.location.href = "/login.html";
 }
 
-async function saveProfile(){
-  await supabase.from("creators")
-    .update({ bio: document.getElementById("bio").value })
-    .eq("id", currentUser.id);
+/* ===== 3️⃣ FUNCTIONS ===== */
 
-  alert("Profile updated");
-}
-
-async function updatePhoto(){
-  const file = document.getElementById("photoInput").files[0];
-  const filePath = currentUser.id+"-"+Date.now();
-
-  await supabase.storage.from("avatars").upload(filePath, file, { upsert:true });
-
-  const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-
-  await supabase.from("creators")
-    .update({ profile_image: data.publicUrl })
-    .eq("id", currentUser.id);
-
-  document.getElementById("avatar").src = data.publicUrl;
-}
-
-async function connectInstagram(){
-  const username = igUsername.value.trim();
-  if(!username) return alert("Enter Instagram username");
-
-  await supabase.from("social_accounts").insert([{
-    user_id: currentUser.id,
-    platform: "instagram",
-    username: username,
-    followers: igFollowers.value,
-    niche: igNiche.value,
-    goals: igGoals.value
-  }]);
-
-  igStatus.innerText = "✅ Instagram connected successfully";
-}
-
-async function logout(){
+async function logout() {
   await supabase.auth.signOut();
-  location.href="/login.html";
+  window.location.href = "/login.html";
 }
 
-init();
-</script>
+async function saveProfile() {
+  const bio = document.getElementById("bio").value;
 
-</body>
-</html>
+  await supabase
+    .from("creators")
+    .update({ bio })
+    .eq("id", user.id);
+
+  alert("Profile saved ✅");
+}
+
+async function connectInstagram() {
+  const username = document.getElementById("ig_username").value;
+  const followers = document.getElementById("ig_followers").value;
+  const niche = document.getElementById("ig_niche").value;
+  const goals = document.getElementById("ig_goals").value;
+
+  await supabase.from("social_accounts").insert({
+    user_id: user.id,
+    platform: "instagram",
+    username,
+    followers,
+    niche,
+    goals
+  });
+
+  alert("Instagram connected ✅");
+}
+</script>
