@@ -1,7 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Dashboard – InstaAssistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
 
+<style>
+body{
+  margin:0;
+  font-family: Inter, system-ui, Arial;
+  background:#020617;
+  color:white;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:16px;
+}
+.card{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+button{
+  background:#38bdf8;
+  border:none;
+  color:#020617;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+}
+input,textarea{
+  width:100%;
+  background:#020617;
+  border:1px solid #1e293b;
+  color:white;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:3px solid #38bdf8;
+}
+.small{
+  color:#94a3b8;
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h3>🚀 InstaAssistant</h3>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="card">
+    <h4>Profile</h4>
+    <img id="avatar" src="https://i.pravatar.cc/300" />
+    <textarea id="bio" placeholder="Your bio"></textarea>
+    <button onclick="saveProfile()">Save profile</button>
+    <p class="small">Public page: <span id="publicUrl">–</span></p>
+  </div>
+
+  <!-- INSTAGRAM -->
+  <div class="card">
+    <h4>Connect Instagram</h4>
+    <input id="ig_username" placeholder="Instagram username" />
+    <input id="ig_followers" type="number" placeholder="Followers" />
+    <input id="ig_niche" placeholder="Niche (fitness, finance…)" />
+    <input id="ig_goals" placeholder="Goals (leads, sales…)" />
+    <button onclick="connectInstagram()">Connect Instagram</button>
+  </div>
+
+</div>
+
 <script>
-/* ===== 1️⃣ SUPABASE INIT (TOP MOST) ===== */
+/* ================= SUPABASE INIT ================= */
+
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE";
 
@@ -10,20 +103,36 @@ const supabase = window.supabase.createClient(
   SUPABASE_KEY
 );
 
-/* ===== 2️⃣ AUTH CHECK ===== */
+/* ================= AUTH CHECK ================= */
+
 const user = supabase.auth.user();
+
 if (!user) {
   window.location.href = "/login.html";
 }
 
-/* ===== 3️⃣ FUNCTIONS ===== */
+/* ================= LOAD CREATOR ================= */
 
-async function logout() {
-  await supabase.auth.signOut();
-  window.location.href = "/login.html";
+loadProfile();
+
+async function loadProfile(){
+  const { data } = await supabase
+    .from("creators")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if(data){
+    document.getElementById("bio").value = data.bio || "";
+    document.getElementById("avatar").src = data.profile_image;
+    document.getElementById("publicUrl").innerText =
+      window.location.origin + "/creator.html?u=" + data.username;
+  }
 }
 
-async function saveProfile() {
+/* ================= ACTIONS ================= */
+
+async function saveProfile(){
   const bio = document.getElementById("bio").value;
 
   await supabase
@@ -34,21 +143,24 @@ async function saveProfile() {
   alert("Profile saved ✅");
 }
 
-async function connectInstagram() {
-  const username = document.getElementById("ig_username").value;
-  const followers = document.getElementById("ig_followers").value;
-  const niche = document.getElementById("ig_niche").value;
-  const goals = document.getElementById("ig_goals").value;
-
+async function connectInstagram(){
   await supabase.from("social_accounts").insert({
     user_id: user.id,
     platform: "instagram",
-    username,
-    followers,
-    niche,
-    goals
+    username: document.getElementById("ig_username").value,
+    followers: document.getElementById("ig_followers").value,
+    niche: document.getElementById("ig_niche").value,
+    goals: document.getElementById("ig_goals").value
   });
 
   alert("Instagram connected ✅");
 }
+
+async function logout(){
+  await supabase.auth.signOut();
+  window.location.href = "/login.html";
+}
 </script>
+
+</body>
+</html>
