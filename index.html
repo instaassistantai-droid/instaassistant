@@ -5,93 +5,152 @@
     <title>InstaAssistant – AI for Instagram Creators</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
-        * { box-sizing: border-box; }
+        :root {
+            --bg: #05070a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent: #38bdf8;
+            --glow: rgba(56, 189, 248, 0.4);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
         body {
             margin: 0;
-            font-family: Inter, system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at top, #020617, #000000);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 50%),
+                radial-gradient(circle at 0% 0%, #0c111d 0%, transparent 40%);
             color: white;
-            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
         }
-        .hero { max-width: 900px; padding: 40px 20px; text-align: center; }
+
         .badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(56,189,248,0.12); color: #38bdf8;
-            padding: 8px 14px; border-radius: 999px;
-            font-size: 14px; margin-bottom: 18px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: var(--accent);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
         }
-        h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.1; margin: 10px 0; }
-        .highlight { color: #38bdf8; }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 72px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff 40%, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         .subtitle {
-            max-width: 640px; margin: 18px auto 0;
-            font-size: 18px; line-height: 1.6; color: #cbd5f5;
+            font-size: 20px;
+            color: #94a3b8;
+            max-width: 600px;
+            margin-top: 20px;
+            line-height: 1.6;
         }
-        .buttons { margin-top: 36px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-        .btn-primary {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 14px 30px; min-width: 170px;
-            font-size: 16px; font-weight: 600; text-decoration: none;
-            color: #020617; background: #38bdf8;
-            border-radius: 14px; transition: all 0.2s ease;
+
+        /* --- BENTO GRID FEATURES --- */
+        .features-grid {
+            max-width: 1100px;
+            margin: 80px auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: 200px;
+            gap: 20px;
+            padding: 0 20px;
         }
-        .btn-primary:hover { background: #0ea5e9; transform: translateY(-1px); }
-        .btn-secondary {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 14px 28px; min-width: 200px;
-            font-size: 16px; font-weight: 600; text-decoration: none;
-            color: white; background: transparent;
-            border-radius: 14px; border: 1px solid #1e293b;
-            transition: all 0.2s ease;
+
+        .bento-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .footer { margin-top: 42px; font-size: 13px; color: #64748b; }
+
+        .bento-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--glow);
+            transform: translateY(-5px);
+        }
+
+        /* Specific card sizing */
+        .large { grid-column: span 2; grid-row: span 2; }
+        .tall { grid-row: span 2; }
+
+        .card-label { color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .card-title { font-size: 22px; font-weight: 600; margin: 10px 0; }
+        .card-desc { color: #64748b; font-size: 15px; }
+
+        /* --- BUTTONS --- */
+        .btn-glow {
+            margin-top: 40px;
+            padding: 16px 40px;
+            background: var(--accent);
+            color: #000;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 0 25px var(--glow);
+            transition: 0.3s;
+        }
+        .btn-glow:hover { transform: scale(1.05); box-shadow: 0 0 40px var(--accent); }
+
     </style>
 </head>
 <body>
 
-<section class="hero">
-    <div class="badge">🚀 Early Access</div>
-    <h1>AI Assistant for <span class="highlight">Instagram Creators</span></h1>
-    <p class="subtitle">
-        InstaAssistant helps creators manage links, auto-reply to DMs,
-        and convert followers into leads — all from one smart bio page.
-    </p>
+    <section class="hero">
+        <div class="badge">Next-Gen AI</div>
+        <h1>Your Instagram <br>on <span style="color: var(--accent)">Autopilot</span></h1>
+        <p class="subtitle">Convert followers into customers with AI-powered DMs and a high-converting bio link.</p>
+        <a href="/signup.html" class="btn-glow" id="main-cta">Get Started Free</a>
+    </section>
 
-    <div class="buttons">
-        <a href="/signup.html" id="main-cta" class="btn-primary">Get Started</a>
-        <a href="https://www.instagram.com/instasassistantai/" target="_blank" class="btn-secondary">
-            Follow on Instagram
-        </a>
+    <div class="features-grid">
+        <div class="bento-card large">
+            <div class="card-label">Automation</div>
+            <div class="card-title">AI Smart Replies</div>
+            <p class="card-desc">Instantly reply to "How much?" or "Link?" comments with personalized DMs that close the sale 24/7.</p>
+            
+        </div>
+        <div class="bento-card tall">
+            <div class="card-label">Analytics</div>
+            <div class="card-title">Live Tracking</div>
+            <p class="card-desc">See exactly which posts are driving clicks and revenue in real-time.</p>
+        </div>
+        <div class="bento-card">
+            <div class="card-label">Bio Page</div>
+            <div class="card-title">Glass Bio</div>
+            <p class="card-desc">A premium, high-speed bio link page designed for creators.</p>
+        </div>
+        <div class="bento-card">
+            <div class="card-label">Growth</div>
+            <div class="card-title">Lead Gen</div>
+            <p class="card-desc">Collect emails directly from your Instagram DMs.</p>
+        </div>
     </div>
-
-    <div class="footer">Built for nano & micro creators · © 2026 InstaAssistant</div>
-</section>
-
-<script>
-    // 1. CONFIGURATION: Replace with your actual Supabase details
-    const SUPABASE_URL = 'https://ymbhbwnsoxbfusltoazm.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // 2. LOGIC: Check if user is already logged in
-    async function checkUserStatus() {
-        const { data: { user } } = await supabase.auth.getUser();
-        const ctaButton = document.getElementById('main-cta');
-
-        if (user) {
-            // If logged in, change button text and destination
-            ctaButton.innerText = "Go to Dashboard";
-            ctaButton.href = "/dashboard.html";
-        }
-    }
-
-    // Run when page opens
-    checkUserStatus();
-</script>
 
 </body>
 </html>
