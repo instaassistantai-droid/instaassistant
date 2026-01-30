@@ -1,171 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>InstaAssistant – AI for Instagram Creators</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #020617, #000000);
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Container */
-.hero {
-  max-width: 900px;
-  padding: 40px 20px;
-  text-align: center;
-}
-
-/* Badge */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(56,189,248,0.12);
-  color: #38bdf8;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 14px;
-  margin-bottom: 18px;
-}
-
-/* Headings */
-h1 {
-  font-size: clamp(32px, 6vw, 56px);
-  line-height: 1.1;
-  margin: 10px 0;
-}
-
-.highlight {
-  color: #38bdf8;
-}
-
-.subtitle {
-  max-width: 640px;
-  margin: 18px auto 0;
-  font-size: 18px;
-  line-height: 1.6;
-  color: #cbd5f5;
-}
-
-/* Buttons */
-.buttons {
-  margin-top: 36px;
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 14px 30px;
-  min-width: 170px;
-
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-
-  color: #020617;
-  background: #38bdf8;
-
-  border-radius: 14px;
-  border: none;
-
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-  background: #0ea5e9;
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 14px 28px;
-  min-width: 200px;
-
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-
-  color: white;
-  background: transparent;
-
-  border-radius: 14px;
-  border: 1px solid #1e293b;
-
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background: #020617;
-  transform: translateY(-1px);
-}
-
-/* Footer */
-.footer {
-  margin-top: 42px;
-  font-size: 13px;
-  color: #64748b;
-}
-
-/* Mobile */
-@media (max-width: 520px) {
-  .subtitle {
-    font-size: 16px;
-  }
-}
-</style>
+    <meta charset="UTF-8" />
+    <title>InstaAssistant – AI for Instagram Creators</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top, #020617, #000000);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero { max-width: 900px; padding: 40px 20px; text-align: center; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(56,189,248,0.12); color: #38bdf8;
+            padding: 8px 14px; border-radius: 999px;
+            font-size: 14px; margin-bottom: 18px;
+        }
+        h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.1; margin: 10px 0; }
+        .highlight { color: #38bdf8; }
+        .subtitle {
+            max-width: 640px; margin: 18px auto 0;
+            font-size: 18px; line-height: 1.6; color: #cbd5f5;
+        }
+        .buttons { margin-top: 36px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 14px 30px; min-width: 170px;
+            font-size: 16px; font-weight: 600; text-decoration: none;
+            color: #020617; background: #38bdf8;
+            border-radius: 14px; transition: all 0.2s ease;
+        }
+        .btn-primary:hover { background: #0ea5e9; transform: translateY(-1px); }
+        .btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 14px 28px; min-width: 200px;
+            font-size: 16px; font-weight: 600; text-decoration: none;
+            color: white; background: transparent;
+            border-radius: 14px; border: 1px solid #1e293b;
+            transition: all 0.2s ease;
+        }
+        .footer { margin-top: 42px; font-size: 13px; color: #64748b; }
+    </style>
 </head>
-
 <body>
 
 <section class="hero">
+    <div class="badge">🚀 Early Access</div>
+    <h1>AI Assistant for <span class="highlight">Instagram Creators</span></h1>
+    <p class="subtitle">
+        InstaAssistant helps creators manage links, auto-reply to DMs,
+        and convert followers into leads — all from one smart bio page.
+    </p>
 
-  <div class="badge">🚀 Early Access</div>
+    <div class="buttons">
+        <a href="/signup.html" id="main-cta" class="btn-primary">Get Started</a>
+        <a href="https://www.instagram.com/instasassistantai/" target="_blank" class="btn-secondary">
+            Follow on Instagram
+        </a>
+    </div>
 
-  <h1>
-    AI Assistant for <span class="highlight">Instagram Creators</span>
-  </h1>
-
-  <p class="subtitle">
-    InstaAssistant helps creators manage links, auto-reply to DMs,
-    and convert followers into leads — all from one smart bio page.
-  </p>
-
-  <div class="buttons">
-    <a href="/signup.html" class="btn-primary">Get Started</a>
-    <a href="https://www.instagram.com/instasassistantai/" target="_blank" class="btn-secondary">
-      Follow on Instagram
-    </a>
-  </div>
-
-  <div class="footer">
-    Built for nano & micro creators · © 2026 InstaAssistant
-  </div>
-
+    <div class="footer">Built for nano & micro creators · © 2026 InstaAssistant</div>
 </section>
+
+<script>
+    // 1. CONFIGURATION: Replace with your actual Supabase details
+    const SUPABASE_URL = 'https://ymbhbwnsoxbfusltoazm.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // 2. LOGIC: Check if user is already logged in
+    async function checkUserStatus() {
+        const { data: { user } } = await supabase.auth.getUser();
+        const ctaButton = document.getElementById('main-cta');
+
+        if (user) {
+            // If logged in, change button text and destination
+            ctaButton.innerText = "Go to Dashboard";
+            ctaButton.href = "/dashboard.html";
+        }
+    }
+
+    // Run when page opens
+    checkUserStatus();
+</script>
 
 </body>
 </html>
