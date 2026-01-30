@@ -5,117 +5,184 @@
 <title>Dashboard – InstaAssistant</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<script src="https://unpkg.com/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
 body{
   margin:0;
-  font-family: Inter, system-ui, Arial;
+  font-family:Inter,system-ui,Arial;
   background:#020617;
-  color:white;
+  color:#fff;
 }
-.container{
-  max-width:420px;
-  margin:auto;
-  padding:16px;
-}
-.card{
-  background:#020617;
-  border:1px solid #1e293b;
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:16px;
-}
-.header{
+
+header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  padding:18px 24px;
+  border-bottom:1px solid #1e293b;
 }
-button{
+
+header h1{
+  font-size:18px;
+}
+
+.logout{
   background:#38bdf8;
-  border:none;
   color:#020617;
-  padding:10px 14px;
+  border:none;
+  padding:10px 16px;
   border-radius:10px;
-  font-weight:600;
   cursor:pointer;
+  font-weight:600;
 }
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:24px;
+}
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+}
+
+@media(min-width:900px){
+  .dashboard-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+.card{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:18px;
+  padding:22px;
+}
+
+.profile{
+  display:flex;
+  gap:20px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.profile img{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:3px solid #38bdf8;
+  object-fit:cover;
+}
+
 input,textarea{
   width:100%;
   background:#020617;
   border:1px solid #1e293b;
-  color:white;
-  padding:10px;
-  border-radius:10px;
-  margin-bottom:10px;
+  color:#fff;
+  border-radius:12px;
+  padding:12px;
+  margin-top:10px;
 }
-img{
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  border:3px solid #38bdf8;
+
+button.primary{
+  margin-top:12px;
+  background:#38bdf8;
+  color:#020617;
+  border:none;
+  padding:12px;
+  width:100%;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
 }
-.small{
-  color:#94a3b8;
-  font-size:13px;
+
+.platform{
+  margin-top:12px;
+}
+
+.platform button{
+  background:#0f172a;
+  color:#fff;
+  border:1px solid #1e293b;
+  padding:12px;
+  width:100%;
+  border-radius:12px;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
+<header>
+  <h1>🚀 InstaAssistant</h1>
+  <button class="logout" onclick="logout()">Logout</button>
+</header>
+
 <div class="container">
+  <div class="dashboard-grid">
 
-  <div class="header">
-    <h3>🚀 InstaAssistant</h3>
-    <button onclick="logout()">Logout</button>
+    <!-- PROFILE -->
+    <div class="card">
+      <h3>Profile</h3>
+
+      <div class="profile">
+        <img id="avatar" src="https://i.pravatar.cc/150" />
+        <input type="file" id="photo" />
+      </div>
+
+      <textarea id="bio" placeholder="Your bio"></textarea>
+      <button class="primary" onclick="saveProfile()">Save profile</button>
+
+      <p id="publicPage" style="margin-top:10px;color:#94a3b8"></p>
+    </div>
+
+    <!-- INSTAGRAM -->
+    <div class="card">
+      <h3>Connect Instagram</h3>
+
+      <input id="ig_username" placeholder="Instagram username" />
+      <input id="followers" type="number" placeholder="Followers count" />
+      <input id="niche" placeholder="Niche (fitness, finance…)" />
+      <input id="goals" placeholder="Goals (leads, sales…)" />
+
+      <button class="primary" onclick="connectInstagram()">Connect Instagram</button>
+
+      <div class="platform">
+        ▶ YouTube (next)
+      </div>
+      <div class="platform">
+        ▶ TikTok (next)
+      </div>
+      <div class="platform">
+        ▶ Spotify (next)
+      </div>
+    </div>
+
   </div>
-
-  <!-- PROFILE -->
-  <div class="card">
-    <h4>Profile</h4>
-    <img id="avatar" src="https://i.pravatar.cc/300" />
-    <textarea id="bio" placeholder="Your bio"></textarea>
-    <button onclick="saveProfile()">Save profile</button>
-    <p class="small">Public page: <span id="publicUrl">–</span></p>
-  </div>
-
-  <!-- INSTAGRAM -->
-  <div class="card">
-    <h4>Connect Instagram</h4>
-    <input id="ig_username" placeholder="Instagram username" />
-    <input id="ig_followers" type="number" placeholder="Followers" />
-    <input id="ig_niche" placeholder="Niche (fitness, finance…)" />
-    <input id="ig_goals" placeholder="Goals (leads, sales…)" />
-    <button onclick="connectInstagram()">Connect Instagram</button>
-  </div>
-
 </div>
 
 <script>
-/* ================= SUPABASE INIT ================= */
-
+/* ---------- SUPABASE INIT ---------- */
 const SUPABASE_URL = "https://ymbhbwnsoxbfusltoazm.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYmhid25zb3hiZnVzbHRvYXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzc1MzMsImV4cCI6MjA4NTE1MzUzM30.zN743oVTAKPrfX4PAs1oBjUiszy6nAae6a_NTYhGPCE";
+const SUPABASE_KEY = "sb_publishable_wdK0N_KT3ZabHESPxjQ70A_R5Vup_84";
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-/* ================= AUTH CHECK ================= */
+/* ---------- LOAD USER ---------- */
+async function loadUser(){
+  const { data:{user} } = await supabase.auth.getUser();
+  if(!user){
+    location.href="/login.html";
+    return;
+  }
 
-const user = supabase.auth.user();
-
-if (!user) {
-  window.location.href = "/login.html";
-}
-
-/* ================= LOAD CREATOR ================= */
-
-loadProfile();
-
-async function loadProfile(){
   const { data } = await supabase
     .from("creators")
     .select("*")
@@ -125,41 +192,59 @@ async function loadProfile(){
   if(data){
     document.getElementById("bio").value = data.bio || "";
     document.getElementById("avatar").src = data.profile_image;
-    document.getElementById("publicUrl").innerText =
-      window.location.origin + "/creator.html?u=" + data.username;
+    document.getElementById("publicPage").innerText =
+      "Public page: https://instaassistant.vercel.app/creator.html?u="+data.username;
   }
 }
 
-/* ================= ACTIONS ================= */
-
+/* ---------- SAVE PROFILE ---------- */
 async function saveProfile(){
-  const bio = document.getElementById("bio").value;
+  const { data:{user} } = await supabase.auth.getUser();
+  if(!user) return;
 
-  await supabase
-    .from("creators")
-    .update({ bio })
-    .eq("id", user.id);
+  let imageUrl = document.getElementById("avatar").src;
 
-  alert("Profile saved ✅");
+  const file = document.getElementById("photo").files[0];
+  if(file){
+    const path = user.id+"/"+Date.now()+"_"+file.name;
+    await supabase.storage.from("avatars").upload(path,file,{upsert:true});
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    imageUrl = data.publicUrl;
+    document.getElementById("avatar").src = imageUrl;
+  }
+
+  await supabase.from("creators").update({
+    bio: document.getElementById("bio").value,
+    profile_image: imageUrl
+  }).eq("id", user.id);
+
+  alert("Profile saved");
 }
 
+/* ---------- CONNECT INSTAGRAM ---------- */
 async function connectInstagram(){
+  const { data:{user} } = await supabase.auth.getUser();
+  if(!user) return;
+
   await supabase.from("social_accounts").insert({
     user_id: user.id,
     platform: "instagram",
     username: document.getElementById("ig_username").value,
-    followers: document.getElementById("ig_followers").value,
-    niche: document.getElementById("ig_niche").value,
-    goals: document.getElementById("ig_goals").value
+    followers: document.getElementById("followers").value,
+    niche: document.getElementById("niche").value,
+    goals: document.getElementById("goals").value
   });
 
-  alert("Instagram connected ✅");
+  alert("Instagram connected (demo)");
 }
 
+/* ---------- LOGOUT ---------- */
 async function logout(){
   await supabase.auth.signOut();
-  window.location.href = "/login.html";
+  location.href="/login.html";
 }
+
+loadUser();
 </script>
 
 </body>
